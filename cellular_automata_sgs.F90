@@ -63,7 +63,7 @@ integer :: blocksz,levs
 integer :: ncells,nlives
 integer, save :: initialize_ca
 integer(8) :: count, count_rate, count_max, count_trunc,nx_full
-integer(8) :: iscale = 10000000000
+integer(8) :: iscale = 10000000000_8
 integer, allocatable :: iini(:,:,:),ilives_in(:,:,:),ca_plumes(:,:),io_layout(:)
 real(kind=kind_phys), allocatable :: ssti(:,:),lsmski(:,:),lakei(:,:)
 real(kind=kind_phys), allocatable :: CA(:,:),condition(:,:),conditiongrid(:,:)
@@ -257,7 +257,7 @@ if (.not. restart) then
             else
                ! don't rely on compiler to truncate integer(8) to integer(4) on
                ! overflow, do wrap around explicitly.
-               count4 = mod((iseed_ca+mytile)*(i1+nx_full*(j1-1))+ 2147483648, 4294967296) - 2147483648
+               count4 = int(mod(int((iseed_ca+mytile)*(i1+nx_full*(j1-1)), 8) + 2147483648_8, 4294967296_8) - 2147483648_8)
             endif
             ct=1
             do nf=1,nca

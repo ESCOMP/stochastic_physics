@@ -305,7 +305,7 @@ integer, dimension(nxc,nyc) :: neighbours, birth, thresh
 integer, dimension(nxc,nyc) :: newcell, temp,newseed
 integer, dimension(ncells,ncells) :: onegrid
 integer(8)           :: nx_full,ny_full
-integer(8)           :: iscale = 10000000000
+integer(8)           :: iscale = 10000000000_8
 logical, save        :: start_from_restart
 
 real, dimension(nxc,nyc) :: noise_b
@@ -390,7 +390,7 @@ if(mod(kstep,nseed)==0. .and. (kstep >= initialize_ca .or. start_from_restart))t
             count_trunc = iscale*(count/iscale)
             count4 = count - count_trunc + mytile *( i1+nx_full*(j1-1)) ! no need to multply by 7 since time will be different in sgs
          else
-            count4 = mod((iseed_ca*nf+mytile)*(i1+nx_full*(j1-1))+ 2147483648, 4294967296) - 2147483648
+            count4 = int(mod(int((iseed_ca*nf+mytile)*(i1+nx_full*(j1-1)), 8) + 2147483648_8, 4294967296_8) - 2147483648_8)
          endif
          noise_b(i,j)=real(random_01_CB(kstep,count4),kind=8)
       enddo
@@ -597,7 +597,7 @@ real, dimension(nxc,nyc) :: noise_b
 integer(8) :: count, count_rate, count_max, count_trunc
 integer    :: count4
 integer(8) :: nx_full,ny_full
-integer(8) :: iscale = 10000000000
+integer(8) :: iscale = 10000000000_8
 integer*8            :: i1,j1
 
 !-------------------------------------------------------------------------------------------------
@@ -636,7 +636,7 @@ if(mod(kstep,nseed) == 0)then
             count_trunc = iscale*(count/iscale)
             count4 = count - count_trunc + mytile *( i1+nx_full*(j1-1)) ! no need to multply by 7 since time will be different in sgs
          else
-            count4 = mod(iseed_ca*nf+(7*mytile)*(i1+nx_full*(j1-1))+ 2147483648, 4294967296) - 2147483648
+            count4 = int(mod(int(iseed_ca*nf+(7*mytile)*(i1+nx_full*(j1-1)), 8) + 2147483648_8, 4294967296_8) - 2147483648_8)
          endif
          noise_b(i,j)=real(random_01_CB(kstep,count4),kind=8)
       enddo
