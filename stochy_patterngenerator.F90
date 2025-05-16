@@ -72,10 +72,12 @@ module stochy_patterngenerator_mod
    include 'function_indlsev'
    bn_local=.false.
    if (present(bn)) bn_local=bn
-   if (present(bn)) then
-        print*,'Berner norm=',bn
-   else
-        print*,'old norm'
+   if (is_rootpe()) then
+      if (present(bn)) then
+           print*,'Berner norm=',bn
+      else
+           print*,'old norm'
+      endif
    endif
    nlons = nlon
    nlats = nlat
@@ -404,13 +406,17 @@ module stochy_patterngenerator_mod
   !print*,'setvarspect,ntrunc',berner_normalize,ntrunc
   ! 1d variance spectrum (as a function of total wavenumber)
   if (varspect_opt == 0) then ! gaussian
-     print*, 'Gaussian variance spectrum'
+      if (is_rootpe()) then
+          print*, 'Gaussian variance spectrum'
+      endif
      ! rpattern%lengthscale is interpreted as an efolding length
      ! scale, in meters.
      ! scaling factors for spectral coeffs of white noise pattern with unit variance
      if (new_lscale) then
         !fix for proper lengthscale
-        print*, 'Proper lengthscale condition'
+        if (is_rootpe()) then
+            print*, 'Proper lengthscale condition'
+        endif
         rpattern%varspectrum = exp((rpattern%lengthscale*0.25)**2*rpattern%lap*inv_rerth_sq)
         do n=0,ntrunc
            rpattern%varspectrum1d(n) = exp(-(rpattern%lengthscale*0.25)**2*float(n)*(float(n)+1.)*inv_rerth_sq)
