@@ -21,7 +21,7 @@ module stochy_data_mod
 
  implicit none
  private
- public :: init_stochdata,init_stochdata_ocn
+ public :: init_stochdata,init_stochdata_ocn,stoch_restfile
 
  type(random_pattern), public, save, allocatable, dimension(:) :: &
        rpattern_sppt,rpattern_shum,rpattern_skeb, rpattern_sfc,rpattern_epbl1,rpattern_epbl2,&
@@ -44,6 +44,7 @@ module stochy_data_mod
  real(kind=kind_phys),public, allocatable :: skebu_save(:,:,:),skebv_save(:,:,:)
  integer,public :: INTTYP
  type(stochy_internal_state),public :: gis_stochy,gis_stochy_ocn,gis_stochy_ocn_skeb
+ character(len=128) :: stoch_restfile = './INPUT/ocn_stoch.res.nc'
 
  contains
 !>@brief The subroutine 'init_stochdata' determins which stochastic physics
@@ -544,7 +545,7 @@ module stochy_data_mod
    if (is_rootpe()) then
       if (stochini) then
          print*,'opening stoch_ini'
-         ierr=nf90_open('INPUT/ocn_stoch.res.nc',nf90_nowrite,ncid=stochlun)
+         ierr=nf90_open(TRIM(stoch_restfile),nf90_nowrite,ncid=stochlun)
          if (ierr .NE. 0) then
             write(0,*) 'error opening stoch_ini'
             iret = ierr
